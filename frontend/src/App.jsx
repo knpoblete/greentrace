@@ -5,6 +5,7 @@ import IssueBond from './components/IssueBond.jsx';
 import BondDetail from './components/BondDetail.jsx';
 import AgentLog from './components/AgentLog.jsx';
 import Marketplace from './components/Marketplace.jsx';
+import Portfolio from './components/Portfolio.jsx';
 import ReviewQueue from './components/ReviewQueue.jsx';
 import Certificate from './components/Certificate.jsx';
 import Login from './components/Login.jsx';
@@ -21,6 +22,7 @@ const NAV = {
   ],
   investor: [
     { to: '/marketplace', label: 'Marketplace', icon: '🛒' },
+    { to: '/portfolio', label: 'My Wallet', icon: '💼' },
   ],
   verifier: [
     { to: '/review', label: 'Review Queue', icon: '✓' },
@@ -98,6 +100,7 @@ function Shell() {
           <Route path="/issue" element={<ProtectedRoute roles={['treasury']}><IssueBond /></ProtectedRoute>} />
           <Route path="/monitor" element={<ProtectedRoute roles={['treasury', 'verifier']}><AgentLog /></ProtectedRoute>} />
           <Route path="/marketplace" element={<ProtectedRoute roles={['investor']}><Marketplace /></ProtectedRoute>} />
+          <Route path="/portfolio" element={<ProtectedRoute roles={['investor']}><Portfolio /></ProtectedRoute>} />
           <Route path="/review" element={<ProtectedRoute roles={['verifier']}><ReviewQueue /></ProtectedRoute>} />
           <Route path="/bonds/:id" element={<ProtectedRoute><BondDetail /></ProtectedRoute>} />
           <Route path="/certificate/:id" element={<ProtectedRoute><Certificate /></ProtectedRoute>} />

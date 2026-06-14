@@ -1,5 +1,6 @@
 import { convertStringToHex } from 'xrpl';
 import { submitTx, simHash } from './safeSubmit.js';
+import { getClient } from './client.js';
 import { getWallet } from './wallet.js';
 import { insertBond, getBond, getWalletRow, getCredentialsBySubject } from '../db.js';
 import { DOMAIN_CRED_TYPES } from './domain.js';
@@ -125,6 +126,23 @@ export async function mintToInvestor(bondId, investorAddress, amount) {
     holdHash: hold.hash,
     simulated: auth.simulated || hold.simulated,
   };
+}
+
+/**
+ * Read an account's MPToken holdings from the ledger (held bond tokens with a positive balance).
+ * Returns [{ mptIssuanceId, amount }]. Best-effort — returns [] on any error.
+ */
+export async function getMptHoldings(address) {
+  try {
+    const client = await getClient();
+    const res = await client.request({ command: 'account_objects', account: address, type: 'mptoken', ledger_index: 'validated' });
+    return (res.result.account_objects || [])
+      .filter((o) => o.LedgerEntryType === 'MPToken')
+      .map((o) => ({ mptIssuanceId: o.MPTokenIssuanceID, amount: String(o.MPTAmount ?? '0') }))
+      .filter((h) => Number(h.amount) > 0);
+  } catch {
+    return [];
+  }
 }
 
 /** Does this account hold an active verifier-issued credential that admits it to the domain? */
