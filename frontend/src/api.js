@@ -27,6 +27,7 @@ export const issueCredential = (data) => axios.post('/api/credentials/issue', da
 export const revokeCredential = (id) => axios.delete(`/api/credentials/${id}`);
 
 export const getPortfolio = (role) => axios.get(`/api/portfolio/${role}`);
+export const depositVault = (data) => axios.post('/api/vault/deposit', data);
 
 export const getRlusdStatus = () => axios.get('/api/rlusd/status');
 export const payRlusd = (data) => axios.post('/api/rlusd/pay', data);

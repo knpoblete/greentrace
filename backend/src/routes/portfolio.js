@@ -23,12 +23,15 @@ router.get('/:role', async (req, res) => {
 
     const bonds = getAllBonds();
     const holdings = holdingsRaw.map((h) => {
-      const bond = bonds.find((b) => b.mpt_issuance_id === h.mptIssuanceId);
+      const bondTok = bonds.find((b) => b.mpt_issuance_id === h.mptIssuanceId);
+      const vaultBond = bonds.find((b) => b.share_issuance_id === h.mptIssuanceId);
+      const bond = bondTok || vaultBond;
       return {
         mptIssuanceId: h.mptIssuanceId,
         amount: h.amount,
+        kind: vaultBond ? 'vault-shares' : 'bond',
         bondId: bond?.id || null,
-        bondName: bond?.bond_name || 'Unknown bond',
+        bondName: bond?.bond_name || 'Unknown',
         standard: bond?.standard || null,
         greenStatus: bond?.green_status || null,
       };

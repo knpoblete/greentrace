@@ -47,6 +47,13 @@ export async function issueBond(params) {
   // Flat metadata used by the app (agent reads covenants/standards/etc. from this in the DB).
   // Includes the rich green-instrument fields (isin/coupon/maturity/use_of_proceeds/frameworks/
   // per-framework pass/verify_score/issued_date), surfaced in the UI and on-chain via additional_info.
+  // Rich fields from the issue wizard override the auto-generated green defaults when provided.
+  const overrides = {};
+  if (params.coupon) overrides.coupon = String(params.coupon);
+  if (params.maturity) overrides.maturity = String(params.maturity);
+  if (params.isin) overrides.isin = params.isin;
+  if (params.useOfProceeds) overrides.use_of_proceeds = params.useOfProceeds;
+
   const metadata = {
     name: params.bondName,
     standards,
@@ -56,9 +63,20 @@ export async function issueBond(params) {
     issuedAt: Math.floor(issuedAtMs / 1000),
     verifier: verifierRow?.address || null,
     ...green,
+    ...overrides,
+    // Wizard extras (captured + embedded on-chain; some inform later phases e.g. XLS-66 lending).
+    bondType: params.bondType || null,
+    issuerName: params.issuerName || null,
+    amountUsd: params.amountUsd || null,
+    term: params.term || null,
+    verifierName: params.verifierName || 'KPMG',
+    requiredCredential: params.requiredCredential || 'InvestorKYC',
+    loan: params.loan || null,
+    documents: Array.isArray(params.documents) ? params.documents : [],
   };
 
-  // XLS-89-compliant shape for the on-chain MPTokenMetadata (<=9 top-level fields, recognised by explorers).
+  // XLS-89-compliant shape for the on-chain MPTokenMetadata. The field is capped at 1024 bytes, so
+  // `additional_info` carries only a COMPACT subset; the full detail lives in the DB metadata_json.
   const ticker = params.bondName.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6) || 'GBOND';
   const onchainMeta = {
     ticker,
@@ -68,7 +86,15 @@ export async function issueBond(params) {
     asset_class: 'rwa',
     asset_subclass: 'other',
     issuer_name: 'GreenTrace',
-    additional_info: metadata,
+    additional_info: {
+      standards,
+      projectType: params.projectType,
+      isin: metadata.isin,
+      coupon: metadata.coupon,
+      maturity: metadata.maturity,
+      verify_score: metadata.verify_score,
+      verifier: metadata.verifierName,
+    },
   };
 
   const tx = {

@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS bonds (
   green_status TEXT DEFAULT 'COMPLIANT',
   pending_review INTEGER DEFAULT 0,
   recommended_status TEXT,
+  vault_id TEXT,
+  share_issuance_id TEXT,
   tx_hash TEXT,
   simulated INTEGER DEFAULT 0,
   created_at INTEGER
@@ -116,6 +118,10 @@ export const updateBondStatus = (id, green_status) =>
 export const setBondReview = (id, pending_review, recommended_status) =>
   db.prepare('UPDATE bonds SET pending_review = ?, recommended_status = ? WHERE id = ?')
     .run(pending_review ? 1 : 0, recommended_status ?? null, id);
+// XLS-65 single-asset vault opened for the bond (id of the vault + its share MPT issuance).
+export const setBondVault = (id, vault_id, share_issuance_id) =>
+  db.prepare('UPDATE bonds SET vault_id = ?, share_issuance_id = ? WHERE id = ?')
+    .run(vault_id ?? null, share_issuance_id ?? null, id);
 export const countBonds = () => db.prepare('SELECT COUNT(*) c FROM bonds').get().c;
 
 // ---- escrows ----

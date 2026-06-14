@@ -18,6 +18,7 @@ import agentRouter from './routes/agent.js';
 import rlusdRouter from './routes/rlusd.js';
 import authRouter from './routes/auth.js';
 import portfolioRouter from './routes/portfolio.js';
+import vaultRouter from './routes/vault.js';
 
 const app = express();
 app.use(cors());
@@ -53,6 +54,7 @@ app.use('/api/agent', agentRouter);
 app.use('/api/rlusd', rlusdRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/portfolio', portfolioRouter);
+app.use('/api/vault', vaultRouter);
 
 // Serve the built React app (production single-service deploy) + SPA fallback for client routes.
 // The regex excludes /api/, so API + SSE routing is unaffected.

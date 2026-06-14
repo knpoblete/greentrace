@@ -58,8 +58,13 @@ export default function Portfolio() {
           {p.holdings.map((h) => (
             <div key={h.mptIssuanceId} className="card p-4 flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <div className="font-medium truncate">{h.bondName}</div>
-                <div className="text-[11px] text-gray-500 font-mono truncate">{h.amount} units · {h.mptIssuanceId?.slice(0, 16)}…</div>
+                <div className="font-medium truncate flex items-center gap-2">
+                  {h.bondName}
+                  <span className={`pill !text-[10px] ${h.kind === 'vault-shares' ? 'bg-indigo-500/15 text-indigo-300' : 'bg-surface2 text-gray-400'}`}>
+                    {h.kind === 'vault-shares' ? 'vault shares' : 'bond'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-gray-500 font-mono truncate">{fmtAmount(h.amount)} {h.kind === 'vault-shares' ? 'shares' : 'units'} · {h.mptIssuanceId?.slice(0, 16)}…</div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {h.greenStatus && <StatusPill status={h.greenStatus} />}

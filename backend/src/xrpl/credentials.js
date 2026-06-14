@@ -34,6 +34,7 @@ export async function issueCredential(params) {
   const verifiedAt = Math.floor(Date.now() / 1000);
   const standards = normalizeStandards(params.fields?.standards ?? params.fields?.standard);
 
+  const verifierName = params.fields?.verifierName || 'KPMG';
   let fields;
   if (params.credentialType === 'GreenBondVerified') {
     // The green-verification credential attests Pass for each standard the bond claims.
@@ -41,7 +42,7 @@ export async function issueCredential(params) {
     for (const code of standards) perStandard[labelFor(code)] = 'Pass';
     fields = {
       Bond_Status: 'Green_Verified',
-      Verified_By: 'KPMG',
+      Verified_By: verifierName,
       Standards: standards.map(labelFor).join(', '),
       ...perStandard,
       verifiedAt,
@@ -59,7 +60,7 @@ export async function issueCredential(params) {
   // On-chain URI must hex-encode to <= 256 chars (128 bytes); keep it compact. Full detail
   // lives in the DB `fields_json`. Compact attestation: status + verifier + standard abbrevs.
   const compact = params.credentialType === 'GreenBondVerified'
-    ? { bs: 'GV', vb: 'KPMG', s: standards.map(abbrevFor).join(''), t: verifiedAt }
+    ? { bs: 'GV', vb: verifierName.slice(0, 16), s: standards.map(abbrevFor).join(''), t: verifiedAt }
     : { s: standards[0], st: fields.covenantStatus || 'VERIFIED', t: verifiedAt };
   const createTx = {
     TransactionType: 'CredentialCreate',

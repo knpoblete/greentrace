@@ -4,8 +4,9 @@ import { setupRlusd } from './xrpl/rlusd.js';
 import { setupDomain } from './xrpl/domain.js';
 import { issueBond, mintToInvestor } from './xrpl/mpt.js';
 import { createEscrow } from './xrpl/escrow.js';
+import { createVault } from './xrpl/vault.js';
 import { issueCredential } from './xrpl/credentials.js';
-import { countBonds, getWalletRow, kvGet, kvSet } from './db.js';
+import { countBonds, getWalletRow, setBondVault, kvGet, kvSet } from './db.js';
 
 // All demo bonds claim the three core standards (ICMA, EU Taxonomy, Climate Bonds) so they can hold
 // green status, and start COMPLIANT + credentialed (initial KPMG attestation at issuance). The agent
@@ -110,6 +111,10 @@ async function runSeed() {
       amount: def.escrowAmount,
       milestones: def.covenants.milestones,
     });
+
+    // Open the single-asset RLUSD vault for this bond (XLS-65).
+    const vault = await createVault().catch((e) => { console.warn('[seed] vault failed:', e?.message); return null; });
+    if (vault?.vaultId) setBondVault(bondId, vault.vaultId, vault.shareIssuanceId);
 
     if (def.credential) {
       // Initial KPMG attestation at issuance → green credential on-chain. Bond stays COMPLIANT

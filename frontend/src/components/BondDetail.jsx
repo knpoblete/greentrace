@@ -8,6 +8,7 @@ import InstrumentPanel from './InstrumentPanel.jsx';
 import CredentialBadge from './CredentialBadge.jsx';
 import AuditTrail from './AuditTrail.jsx';
 import BondAccess from './BondAccess.jsx';
+import VaultPanel from './VaultPanel.jsx';
 import RlusdPanel from './RlusdPanel.jsx';
 import VerifierReview from './VerifierReview.jsx';
 
@@ -62,6 +63,7 @@ export default function BondDetail() {
             </div>
           )}
           <EscrowPanel bond={bond} onChange={load} canRelease={role === 'treasury'} />
+          {role === 'investor' && <VaultPanel bond={bond} />}
           {role === 'investor' && <BondAccess bond={bond} />}
         </div>
         <div className="space-y-6">

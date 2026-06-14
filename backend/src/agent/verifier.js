@@ -170,9 +170,9 @@ export async function attestBond(bondId) {
           subjectAddress: bond.issuer_address,
           credentialType: 'GreenBondVerified',
           bondId,
-          fields: { standards: meta.standards || [meta.standard], covenantStatus: 'COMPLIANT' },
+          fields: { standards: meta.standards || [meta.standard], covenantStatus: 'COMPLIANT', verifierName: meta.verifierName },
         });
-        actionTaken = 'KPMG attested COMPLIANT — credential issued';
+        actionTaken = `${meta.verifierName || 'KPMG'} attested COMPLIANT — credential issued`;
         txHash = cred.txHash;
         simulated = cred.simulated;
       } else {

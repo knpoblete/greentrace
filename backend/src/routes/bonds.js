@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { config } from '../config.js';
-import { getAllBonds, getBond, getCredentialsByBond, getAgentLogs } from '../db.js';
+import { getAllBonds, getBond, getCredentialsByBond, getAgentLogs, setBondVault } from '../db.js';
 import { issueBond, mintToInvestor, buyBond } from '../xrpl/mpt.js';
+import { createVault } from '../xrpl/vault.js';
 import { createEscrow, getEscrowStatus } from '../xrpl/escrow.js';
 import { getCompletedMilestones } from '../agent/mockData.js';
 import { attestBond } from '../agent/verifier.js';
@@ -59,16 +60,29 @@ export function buildBondView(bond) {
       isin: meta.isin || null,
       coupon: meta.coupon || null,
       maturity: meta.maturity || null,
+      term: meta.term || null,
+      issuerName: meta.issuerName || null,
+      amountUsd: meta.amountUsd || null,
+      verifierName: meta.verifierName || 'KPMG',
+      requiredCredential: meta.requiredCredential || 'InvestorKYC',
       useOfProceeds: meta.use_of_proceeds || null,
       frameworks: meta.frameworks || [],
       verifyScore: meta.verify_score ?? null,
       issuedDate: meta.issued_date || null,
+      loan: meta.loan || null,
+      documents: meta.documents || [],
       passes: {
         ICMA: !!meta.icma_pass,
         EU_TAXONOMY: !!meta.eu_taxonomy_pass,
         EU_GREEN_BOND: !!meta.eu_green_bond_pass,
         CLIMATE_BONDS: !!meta.climate_bonds_pass,
       },
+    },
+    // XLS-65 vault opened for this bond.
+    vault: {
+      vaultId: bond.vault_id || null,
+      shareIssuanceId: bond.share_issuance_id || null,
+      open: !!bond.vault_id,
     },
     txHash: bond.tx_hash,
     txLink: txLink(bond.tx_hash),
@@ -113,18 +127,29 @@ router.get('/:id', (req, res) => {
 // POST /api/bonds/issue
 router.post('/issue', async (req, res) => {
   try {
-    const { bondName, standards, standard, projectType, covenants, maxAmount, transferFee } = req.body;
-    const stds = standards ?? standard;
-    if (!bondName || !stds || (Array.isArray(stds) && stds.length === 0) || !projectType) {
+    const b = req.body || {};
+    const stds = b.standards ?? b.standard;
+    if (!b.bondName || !stds || (Array.isArray(stds) && stds.length === 0) || !b.projectType) {
       return res.status(400).json({ error: 'bondName, standards (at least one), projectType are required' });
     }
-    const result = await issueBond({ bondName, standards: stds, projectType, covenants, maxAmount, transferFee });
+    const result = await issueBond({
+      bondName: b.bondName, standards: stds, projectType: b.projectType,
+      covenants: b.covenants, maxAmount: b.maxAmount, transferFee: b.transferFee,
+      // rich wizard fields
+      bondType: b.bondType, issuerName: b.issuerName, amountUsd: b.amountUsd, coupon: b.coupon,
+      maturity: b.maturity, term: b.term, isin: b.isin, useOfProceeds: b.useOfProceeds,
+      verifierName: b.verifierName, requiredCredential: b.requiredCredential, loan: b.loan,
+      documents: b.documents,
+    });
     // authorize + mint to investor (best effort)
     const mint = await mintToInvestor(result.bondId).catch(() => null);
     // Initial verifier attestation at issuance → issues the green credential on-chain.
     const attestation = await attestBond(result.bondId).catch(() => null);
+    // Open the single-asset RLUSD vault for this bond (XLS-65).
+    const vault = await createVault().catch(() => null);
+    if (vault?.vaultId) setBondVault(result.bondId, vault.vaultId, vault.shareIssuanceId);
     const bond = getBond(result.bondId);
-    res.json({ ...result, txLink: txLink(result.txHash), mint, attestation, bond: buildBondView(bond) });
+    res.json({ ...result, txLink: txLink(result.txHash), mint, attestation, vault, bond: buildBondView(bond) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
