@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { releaseEscrow } from '../api';
-import { TxLink, SimBadge, SourceTag, fmtAmount, ErrorBox } from './ui.jsx';
+import { TxLink, SimBadge, SourceTag, ActorTag, fmtAmount, ErrorBox } from './ui.jsx';
 
 export default function EscrowPanel({ bond, onChange }) {
   const e = bond.escrow || {};
@@ -25,7 +25,7 @@ export default function EscrowPanel({ bond, onChange }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-1">
-        <h3 className="font-semibold flex items-center gap-2">Escrow (TokenEscrow · XLS-85) <SourceTag source="on-chain" /></h3>
+        <h3 className="font-semibold flex items-center gap-2">Escrow (TokenEscrow · XLS-85) <SourceTag source="on-chain" /> <ActorTag actor="treasury" /></h3>
         <SimBadge simulated={e.simulated} />
       </div>
       <div className="grid grid-cols-3 gap-3 my-3 text-sm">

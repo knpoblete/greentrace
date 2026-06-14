@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { attestBond } from '../api';
-import { StatusPill, TxLink, SimBadge, SourceTag } from './ui.jsx';
+import { StatusPill, TxLink, SimBadge, SourceTag, ActorTag } from './ui.jsx';
 
 /**
  * The verifier (KPMG) attestation step. The agent only MONITORS and flags; this is the
@@ -26,7 +26,7 @@ export default function VerifierReview({ bond, onChange }) {
   return (
     <div className={`card p-5 ${pending ? 'border-atrisk/50 bg-atrisk/5' : ''}`}>
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold flex items-center gap-2">Verifier Review <SourceTag source="verifier-attested" /></h3>
+        <h3 className="font-semibold flex items-center gap-2">Verifier Review <ActorTag actor="verifier" /></h3>
         <span className="text-[11px] text-gray-500">ESMA-registered reviewer · KPMG</span>
       </div>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { buyBond } from '../api';
-import { TxLink, SimBadge } from './ui.jsx';
+import { TxLink, SimBadge, ActorTag } from './ui.jsx';
 
 function ResultCard({ title, subtitle, result, busy, onBuy, accent }) {
   const accepted = result?.accepted;
@@ -60,10 +60,14 @@ export default function BondAccess({ bond }) {
 
   return (
     <div className="card p-5">
-      <h3 className="font-semibold">Permissioned Access (XLS-80 + XLS-70)</h3>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-semibold">Investor Purchase — Permissioned Access (XLS-80 + XLS-70)</h3>
+        <ActorTag actor="investor" />
+      </div>
       <p className="text-xs text-gray-500 mt-1 mb-4">
-        Only wallets holding a verifier-issued credential are members of the compliance domain and may
-        hold this bond. An uncredentialed wallet is rejected on-chain with <span className="font-mono text-breach">tecNO_AUTH</span>.
+        The buyer side: an <strong>investor</strong> purchases the bond the treasury issued, settling in
+        RLUSD. Only wallets holding a verifier-issued credential are members of the compliance domain and
+        may hold it — an uncredentialed wallet is rejected on-chain with <span className="font-mono text-breach">tecNO_AUTH</span>.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <ResultCard

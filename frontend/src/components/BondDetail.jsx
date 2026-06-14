@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getBond } from '../api';
-import { Spinner, ErrorBox, StatusPill, StandardBadges, TxLink, SimBadge, SourceTag, SourceLegend } from './ui.jsx';
+import { Spinner, ErrorBox, StatusPill, StandardBadges, TxLink, SimBadge, SourceTag, SourceLegend, ActorTag } from './ui.jsx';
 import EscrowPanel from './EscrowPanel.jsx';
 import InstrumentPanel from './InstrumentPanel.jsx';
 import CredentialBadge from './CredentialBadge.jsx';
@@ -45,7 +45,13 @@ export default function BondDetail() {
         </div>
       </div>
 
-      <div className="mb-4"><SourceLegend /></div>
+      <div className="mb-3"><SourceLegend /></div>
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
+        <span className="text-gray-400">Who acts:</span>
+        <ActorTag actor="treasury" /> issues &amp; holds proceeds
+        <ActorTag actor="verifier" /> attests green status
+        <ActorTag actor="investor" /> buys &amp; settles in RLUSD
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">

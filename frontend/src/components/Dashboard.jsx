@@ -96,7 +96,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Treasury Dashboard</h1>
-          <p className="text-sm text-gray-500">Live green compliance status across all issued bonds</p>
+          <p className="text-sm text-gray-500">The <strong>treasury (issuer)</strong> view — live green compliance of every bond it has issued. Open a bond to see the investor purchase, verifier review, and escrow.</p>
         </div>
         <div className="flex gap-2">
           <button className="btn-primary" onClick={runAgent} disabled={running}>

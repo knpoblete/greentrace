@@ -1,4 +1,4 @@
-import { STANDARD_LABELS, SourceTag } from './ui.jsx';
+import { STANDARD_LABELS, SourceTag, ActorTag } from './ui.jsx';
 
 function scoreColor(s) {
   if (s == null) return 'text-gray-400';
@@ -22,7 +22,7 @@ export default function InstrumentPanel({ instrument }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold flex items-center gap-2">Instrument &amp; Verification <SourceTag source="on-chain" /></h3>
+        <h3 className="font-semibold flex items-center gap-2">Instrument &amp; Verification <SourceTag source="on-chain" /> <ActorTag actor="treasury" /></h3>
         <div className="text-right">
           <div className="text-[11px] text-gray-500">Verify Score</div>
           <div className={`text-2xl font-bold leading-none ${scoreColor(i.verifyScore)}`}>

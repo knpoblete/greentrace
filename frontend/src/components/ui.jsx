@@ -62,6 +62,24 @@ export function SourceLegend() {
   );
 }
 
+// Which persona owns an action/panel. Treasury = issuer/seller, Verifier = KPMG reviewer,
+// Investor = buyer. Neutral styling so it reads as a role label, distinct from the source pills.
+const ACTORS = {
+  treasury: { icon: '🏛', label: 'Treasury · issuer' },
+  verifier: { icon: '🔍', label: 'Verifier · KPMG' },
+  investor: { icon: '💼', label: 'Investor · buyer' },
+};
+
+export function ActorTag({ actor }) {
+  const a = ACTORS[actor];
+  if (!a) return null;
+  return (
+    <span className="pill bg-surface2 text-gray-400 border border-border !text-[10px] !px-2 !py-0.5" title={`Actor: ${a.label}`}>
+      {a.icon} {a.label}
+    </span>
+  );
+}
+
 // Map an agent rule to its data provenance.
 export const RULE_SOURCE = {
   emissions: 'self-reported',

@@ -73,6 +73,33 @@ Every real tx hash links to `https://devnet.xrpl.org/transactions/{hash}`.
 
 ---
 
+## Screens & personas
+
+GreenTrace models three actors. The UI tags each panel/action with the actor responsible
+(🏛 Treasury · 🔍 Verifier · 💼 Investor) so it's clear who does what.
+
+| Actor | Role | Where in the app |
+|---|---|---|
+| 🏛 **Treasury (issuer / seller)** | Issues bonds and raises capital; holds proceeds in escrow | The **Dashboard**, the **Issue Bond** flow, and the **Instrument** + **Escrow** panels |
+| 🔍 **Verifier (KPMG)** | ESMA-registered reviewer; attests green status on-chain (issue/revoke credential) | The **Verifier Review** panel on a bond page |
+| 💼 **Investor (buyer)** | Buys the bond and settles in RLUSD; must be credentialed to hold it | The **Investor Purchase** panel on a bond page |
+
+**The two screens:**
+
+- **Dashboard** — the *treasury's* book: every bond it has issued, with live green status, escrow
+  totals, and the monitoring agent's feed. This is the seller's overview. "Run Agent Now" is the
+  treasury/compliance monitoring action; "Issue Bond" starts a new issuance.
+- **Bond detail** — one instrument, with the actions of all three actors in one place:
+  the **Instrument & Verification** and **Escrow** (🏛 treasury), the **Verifier Review** (🔍 KPMG
+  attestation), and the **Investor Purchase** panel (💼 buyer) where Wallet A (credentialed) buys —
+  delivery + **RLUSD settlement** — and Wallet B (no credential) is rejected on-chain. So **selling is
+  the treasury's act of issuance; buying happens per-bond on the bond page**, which is where the
+  price, terms, green status, and credential gate all live.
+
+(Plus **Agent Log** — the full monitoring history — and **Issue Bond** — the 4-step issuance form.)
+
+---
+
 ## Architecture
 
 - **Backend** — Node + Express + `better-sqlite3`, `xrpl.js v4`. See [docs/architecture.md](docs/architecture.md).
