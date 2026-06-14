@@ -7,7 +7,7 @@ import { getClient, isConnected } from './xrpl/client.js';
 import { listWallets } from './xrpl/wallet.js';
 import { getDomainInfo } from './xrpl/domain.js';
 import { getRlusdStatus } from './xrpl/rlusd.js';
-import { seed } from './seed.js';
+import { seed, getSeedState } from './seed.js';
 import { startAgentLoop } from './agent/verifier.js';
 
 import walletsRouter from './routes/wallets.js';
@@ -21,6 +21,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Lightweight, synchronous status (no XRPL calls) — safe to poll frequently, e.g. the seeding banner.
+app.get('/api/status', (req, res) => {
+  res.json({ ok: true, seedState: getSeedState(), seeding: getSeedState() !== 'ready', time: Date.now() });
+});
+
 app.get('/api/health', async (req, res) => {
   let wallets = [];
   let rlusd = null;
@@ -28,6 +33,8 @@ app.get('/api/health', async (req, res) => {
   try { rlusd = await getRlusdStatus(); } catch { /* ignore */ }
   res.json({
     ok: true,
+    seedState: getSeedState(),
+    seeding: getSeedState() !== 'ready',
     xrpl: { node: config.xrplNode, connected: isConnected() },
     domain: getDomainInfo(),
     rlusd,

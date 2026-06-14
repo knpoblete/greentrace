@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard.jsx';
 import IssueBond from './components/IssueBond.jsx';
 import BondDetail from './components/BondDetail.jsx';
 import AgentLog from './components/AgentLog.jsx';
+import SeedingBanner from './components/SeedingBanner.jsx';
 import { getHealth } from './api';
 
 const NAV = [
@@ -62,6 +63,7 @@ export default function App() {
       </aside>
 
       <main className="flex-1 ml-60 min-w-0">
+        <SeedingBanner />
         <Routes location={loc}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/issue" element={<IssueBond />} />

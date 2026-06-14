@@ -108,7 +108,18 @@ export default function Dashboard() {
 
       <ErrorBox error={error} onRetry={load} />
 
-      {loading ? <Spinner /> : (
+      {loading ? <Spinner /> : bonds.length === 0 ? (
+        <div className="card p-10 mt-4 text-center">
+          <div className="flex justify-center mb-4">
+            <span className="w-8 h-8 border-2 border-gray-700 border-t-compliant rounded-full animate-spin" />
+          </div>
+          <h3 className="font-semibold text-gray-200">Setting up the demo on XRPL Devnet…</h3>
+          <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+            Funding wallets, issuing bonds as MPTokens, locking escrow, and posting green credentials
+            on-chain. This takes ~2 minutes on a cold start and refreshes automatically — no need to reload.
+          </p>
+        </div>
+      ) : (
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6 mt-4">
           <div>
             <Summary bonds={bonds} />

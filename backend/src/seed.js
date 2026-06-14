@@ -40,12 +40,28 @@ const DEMO_BONDS = [
   },
 ];
 
+// Seed lifecycle, surfaced via /api/health so the UI can show an "initializing" state during the
+// ~2-min cold-start seed (the server listens before seeding completes).
+let seedState = 'pending'; // 'pending' | 'running' | 'ready' | 'error'
+export const getSeedState = () => seedState;
+
 /**
  * Idempotent seed. On an empty DB: wallets → IOU → domain → 3 bonds → escrows → credentials.
  * The breaching agent cycle is intentionally NOT run here so the live "Run Now" demo flips
  * Coastal Wind from AT_RISK → BREACH (spec §"Demo Flow").
  */
 export async function seed() {
+  seedState = 'running';
+  try {
+    await runSeed();
+    seedState = 'ready';
+  } catch (err) {
+    seedState = 'error';
+    throw err;
+  }
+}
+
+async function runSeed() {
   console.log('[seed] ensuring wallets…');
   await ensureWallets();
 
