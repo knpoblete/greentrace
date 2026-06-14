@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getBonds, getAgentLogs, triggerAgent, subscribeAgentStream } from '../api';
 import BondCard from './BondCard.jsx';
-import { Spinner, ErrorBox, StatusPill, SourceLegend, timeAgo, fmtAmount } from './ui.jsx';
+import { Spinner, ErrorBox, StatusPill, SourceLegend, PreviewTag, timeAgo, fmtAmount } from './ui.jsx';
 
 function Summary({ bonds }) {
   const totalEscrow = bonds.reduce((s, b) => s + Number(b.escrow?.amount || 0), 0);
@@ -28,12 +28,16 @@ function Summary({ bonds }) {
 function AgentFeed({ events }) {
   return (
     <div className="card p-4 h-full">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-sm">Agent Activity</h3>
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-semibold text-sm flex items-center gap-1.5">Compliance Monitor <PreviewTag /></h3>
         <span className="text-[11px] text-gray-500 flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-compliant animate-pulse" /> live
         </span>
       </div>
+      <p className="text-[11px] text-gray-600 mb-3 leading-snug">
+        Preview of the planned V2 AI agent. Runs rule checks and <strong>flags</strong> issues for KPMG
+        to attest — it never changes status or moves funds itself.
+      </p>
       <div className="space-y-2 max-h-[70vh] overflow-auto">
         {events.length === 0 && <div className="text-xs text-gray-600">Waiting for agent cycles…</div>}
         {events.map((e, i) => (
@@ -99,8 +103,8 @@ export default function Dashboard() {
           <p className="text-sm text-gray-500">The <strong>treasury (issuer)</strong> view — live green compliance of every bond it has issued. Open a bond to see the investor purchase, verifier review, and escrow.</p>
         </div>
         <div className="flex gap-2">
-          <button className="btn-primary" onClick={runAgent} disabled={running}>
-            {running ? 'Running…' : '⟳ Run Agent Now'}
+          <button className="btn-primary" onClick={runAgent} disabled={running} title="Run the compliance monitor (V2 preview): rule-checks every bond and flags issues for KPMG review">
+            {running ? 'Checking…' : '⟳ Run Monitor'}
           </button>
           <Link to="/issue" className="btn-ghost">＋ Issue Bond</Link>
         </div>

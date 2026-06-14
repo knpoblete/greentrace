@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getAgentLogs, triggerAgent, subscribeAgentStream } from '../api';
-import { Spinner, ErrorBox, StatusPill, TxLink, SimBadge, SourceTag, SourceLegend, RULE_SOURCE, timeAgo } from './ui.jsx';
+import { Spinner, ErrorBox, StatusPill, TxLink, SimBadge, SourceTag, SourceLegend, PreviewTag, RULE_SOURCE, timeAgo } from './ui.jsx';
 
 export default function AgentLog() {
   const [logs, setLogs] = useState([]);
@@ -25,10 +25,10 @@ export default function AgentLog() {
     <div className="p-8 max-w-[1100px]">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Compliance Agent Log</h1>
-          <p className="text-sm text-gray-500">Monitoring only — the agent flags for verifier review; it never changes status on its own.</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2">Compliance Monitor <PreviewTag /></h1>
+          <p className="text-sm text-gray-500">A working preview of the planned V2 AI agent. It runs deterministic rule checks and <strong>flags</strong> bonds for verifier (KPMG) review — it never moves funds or changes status itself.</p>
         </div>
-        <button className="btn-primary" onClick={run} disabled={running}>{running ? 'Running…' : '⟳ Run Now'}</button>
+        <button className="btn-primary" onClick={run} disabled={running}>{running ? 'Checking…' : '⟳ Run Monitor'}</button>
       </div>
       <div className="mb-4"><SourceLegend /></div>
 

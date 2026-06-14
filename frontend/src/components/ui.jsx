@@ -89,6 +89,15 @@ export const RULE_SOURCE = {
   attestation: 'verifier-attested',
 };
 
+// Marks features that are a working preview of a roadmap (V2) capability.
+export function PreviewTag({ label = 'V2 preview' }) {
+  return (
+    <span className="pill bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 !text-[10px] !px-2 !py-0.5" title="A working preview of a planned V2 feature">
+      ✨ {label}
+    </span>
+  );
+}
+
 export function SimBadge({ simulated }) {
   if (!simulated) return null;
   return (

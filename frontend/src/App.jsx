@@ -10,7 +10,7 @@ import { getHealth } from './api';
 const NAV = [
   { to: '/', label: 'Dashboard', icon: '▦', end: true },
   { to: '/issue', label: 'Issue Bond', icon: '＋' },
-  { to: '/agent', label: 'Agent Log', icon: '⟳' },
+  { to: '/agent', label: 'Compliance Monitor', icon: '⟳' },
 ];
 
 function HealthDot() {

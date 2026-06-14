@@ -13,10 +13,11 @@ It combines four XRPL features end-to-end:
 | **Credentials** | XLS-70 | On-chain green-verification badges, issued/revoked by the reviewer (**KPMG**) |
 | **Permissioned Domains** | XLS-80 | Compliance boundary — only credentialed wallets can hold a bond |
 
-A local, deterministic **rule-based compliance agent** (no external AI API) continuously **monitors**
-every bond and **flags** changes for review. Per the business-plan governance model, the agent never
-finalises a status change itself — a credentialed reviewer (**KPMG**) attests it on-chain (issuing or
-revoking the green credential). **Green status rule:** COMPLIANT only if the bond passes all three
+A local, deterministic **rule-based compliance monitor** (no external AI API) continuously checks
+every bond and **flags** changes for review. It's a **working preview of the V2 AI monitoring agent**
+on the roadmap (which would also assemble ESRS/ISSB reporting). Per the business-plan governance
+model, it never finalises a status change or moves funds itself — a credentialed reviewer (**KPMG**)
+attests changes on-chain (issuing or revoking the green credential). **Green status rule:** COMPLIANT only if the bond passes all three
 core standards — ICMA, EU Taxonomy, Climate Bonds — recorded in the on-chain credential.
 
 > Runs on **XRPL Devnet** (matches the business plan), where all four amendments are live, so
@@ -51,10 +52,10 @@ All state (including wallet seeds) lives in `backend/greentrace.db` (gitignored)
 
 ## Demo flow (what a judge sees)
 
-1. **Dashboard** — 3 bonds, all COMPLIANT and KPMG-credentialed; live agent feed on the right.
-2. **Click "Run Agent Now"** — the monitoring agent detects Coastal Wind's emissions breach
-   (1200 > 1000 tCO₂e) and **flags it for verifier review** (recommend BREACH). The status and
-   credential are **not** changed — the agent never acts on-chain.
+1. **Dashboard** — 3 bonds, all COMPLIANT and KPMG-credentialed; live Compliance Monitor feed on the right.
+2. **Click "Run Monitor"** (Compliance Monitor, a V2 preview) — it detects Coastal Wind's emissions
+   breach (1200 > 1000 tCO₂e) and **flags it for verifier review** (recommend BREACH). The status and
+   credential are **not** changed — the monitor never acts on-chain.
    *(The auto-loop is delayed `AGENT_START_DELAY_MS` so this stays under your control.)*
 3. **Open Coastal Wind → Verifier Review panel → "Attest as KPMG → BREACH"** — the credentialed
    reviewer finalises it: status flips to **BREACH** and the green credential is **revoked on-chain**
@@ -87,8 +88,8 @@ GreenTrace models three actors. The UI tags each panel/action with the actor res
 **The two screens:**
 
 - **Dashboard** — the *treasury's* book: every bond it has issued, with live green status, escrow
-  totals, and the monitoring agent's feed. This is the seller's overview. "Run Agent Now" is the
-  treasury/compliance monitoring action; "Issue Bond" starts a new issuance.
+  totals, and the Compliance Monitor feed. This is the seller's overview. "Run Monitor" runs the
+  compliance monitor (a V2 preview that only flags); "Issue Bond" starts a new issuance.
 - **Bond detail** — one instrument, with the actions of all three actors in one place:
   the **Instrument & Verification** and **Escrow** (🏛 treasury), the **Verifier Review** (🔍 KPMG
   attestation), and the **Investor Purchase** panel (💼 buyer) where Wallet A (credentialed) buys —
@@ -96,7 +97,7 @@ GreenTrace models three actors. The UI tags each panel/action with the actor res
   the treasury's act of issuance; buying happens per-bond on the bond page**, which is where the
   price, terms, green status, and credential gate all live.
 
-(Plus **Agent Log** — the full monitoring history — and **Issue Bond** — the 4-step issuance form.)
+(Plus **Compliance Monitor** — the full monitoring history (V2 preview) — and **Issue Bond** — the 4-step issuance form.)
 
 ---
 

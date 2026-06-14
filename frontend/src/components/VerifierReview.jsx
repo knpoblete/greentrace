@@ -33,12 +33,12 @@ export default function VerifierReview({ bond, onChange }) {
       {pending ? (
         <div className="mt-3 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-atrisk">⚠ Agent flagged for review</span>
+            <span className="text-atrisk">⚠ Monitor flagged for review</span>
             <span className="text-gray-500">recommends</span>
             <StatusPill status={bond.recommendedStatus} />
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            The monitoring agent does not change status on its own. A credentialed reviewer must attest
+            The compliance monitor does not change status on its own. A credentialed reviewer must attest
             the change on-chain (issue or revoke the green credential).
           </p>
           <button className="btn-primary mt-3" onClick={attest} disabled={busy}>
