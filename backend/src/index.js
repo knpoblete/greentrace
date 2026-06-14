@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { getClient, isConnected } from './xrpl/client.js';
 import { listWallets } from './xrpl/wallet.js';
@@ -41,27 +43,29 @@ app.use('/api/credentials', credentialsRouter);
 app.use('/api/agent', agentRouter);
 app.use('/api/rlusd', rlusdRouter);
 
+// Serve the built React app (production single-service deploy) + SPA fallback for client routes.
+// The regex excludes /api/, so API + SSE routing is unaffected.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distDir = path.resolve(__dirname, '../../frontend/dist');
+app.use(express.static(distDir));
+app.get(/^\/(?!api\/).*/, (req, res) => res.sendFile(path.join(distDir, 'index.html')));
+
 app.use((req, res) => res.status(404).json({ error: 'not found' }));
 
-async function start() {
-  // Connect to XRPL (non-fatal if it fails — seed/agent degrade to simulation).
-  try {
-    await getClient();
-  } catch (err) {
-    console.warn('[startup] XRPL connection failed, continuing in degraded mode:', err?.message);
-  }
-
-  try {
-    await seed();
-  } catch (err) {
-    console.warn('[startup] seed error (continuing):', err?.message);
-  }
-
-  startAgentLoop(config.agentIntervalMs, config.agentStartDelayMs);
-
+function start() {
+  // Listen FIRST so the port opens immediately (Render/host health checks pass right away),
+  // then connect to XRPL and run the seed in the background. The API stays responsive while
+  // seeding (~2 min on a cold start); the frontend shows loading states until data arrives.
   app.listen(config.port, () => {
-    console.log(`[server] GreenTrace backend listening on http://localhost:${config.port}`);
+    console.log(`[server] GreenTrace listening on :${config.port}`);
   });
+
+  getClient().catch((err) =>
+    console.warn('[startup] XRPL connection failed, continuing in degraded mode:', err?.message));
+
+  seed()
+    .catch((err) => console.warn('[startup] seed error (continuing):', err?.message))
+    .finally(() => startAgentLoop(config.agentIntervalMs, config.agentStartDelayMs));
 }
 
 start();

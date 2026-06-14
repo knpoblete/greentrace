@@ -11,6 +11,7 @@
     "dev": "concurrently -n backend,frontend -c green,cyan \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dev:backend": "npm run dev --workspace backend",
     "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace backend"
   },
   "devDependencies": {

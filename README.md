@@ -96,13 +96,34 @@ greentrace/
 
 | Var | Default | Notes |
 |---|---|---|
-| `PORT` | `3001` | backend port |
-| `XRPL_NODE` | `wss://s.altnet.rippletest.net:51233` | Testnet node |
+| `PORT` | `3001` | backend port (Render injects this in production) |
+| `XRPL_NODE` | `wss://s.devnet.rippletest.net:51233` | Devnet node (use `s.altnet…` for Testnet) |
 | `DB_PATH` | `./greentrace.db` | SQLite file |
 | `RLUSD_CURRENCY` | `524C5553…` | RLUSD currency hex |
-| `RLUSD_ISSUER` | `rQhWct2fv4…` | Testnet RLUSD issuer |
+| `RLUSD_ISSUER` | `rQhWct2fv4…` | Testnet RLUSD issuer (canonical RLUSD; proceeds use a self-issued IOU) |
 | `AGENT_INTERVAL_MS` | `30000` | agent cycle cadence |
 | `AGENT_START_DELAY_MS` | `120000` | grace before first auto-cycle |
+
+## Deploy on Render
+
+GreenTrace ships as a **single web service**: Express serves the REST/SSE API *and* the built React
+SPA from one origin (no CORS, one URL). A [`render.yaml`](render.yaml) Blueprint is included.
+
+1. Push this repo to GitHub.
+2. Render → **New → Blueprint**, select the repo. Render reads `render.yaml`:
+   - build: `npm install --include=dev && npm run build` (builds `frontend/dist`)
+   - start: `npm start` (Express serves the API + `dist`)
+   - health check: `/api/health`
+3. Deploy. Open the service URL — the dashboard, API, and live agent feed all run on that one origin.
+
+**Free-tier notes:** the filesystem is ephemeral and the service spins down when idle, so each cold
+start **re-seeds on Devnet (~2 min)** — funding wallets and reissuing bonds. The server is responsive
+immediately (it listens before seeding); the UI shows loading states until data arrives. No secrets
+are deployed — wallet seeds are generated at runtime into the gitignored SQLite file. For instant,
+persistent data, attach a Render disk and point `DB_PATH` at it (requires a paid instance).
+
+To run the production build locally: `npm install --include=dev && npm run build && PORT=10000 npm start`,
+then open `http://localhost:10000`.
 
 ## Notes
 

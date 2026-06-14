@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:3001';
+// Same-origin by default (production single-service: Express serves the API + this SPA). In dev,
+// the Vite proxy forwards /api → http://localhost:3001. Override with VITE_API_BASE if ever split.
+const API_BASE = import.meta.env.VITE_API_BASE ?? '';
 axios.defaults.baseURL = API_BASE;
 
 export const getHealth = () => axios.get('/api/health');

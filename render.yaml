@@ -1,0 +1,29 @@
+# Render Blueprint — single web service: Express serves the API + the built React SPA.
+# Deploy: push to GitHub, then Render → New → Blueprint and point it at this repo.
+services:
+  - type: web
+    name: greentrace
+    runtime: node
+    plan: free
+    # --include=dev so Vite (a devDependency) installs even though Render sets NODE_ENV=production.
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.18.0
+      - key: XRPL_NODE
+        value: wss://s.devnet.rippletest.net:51233
+      - key: RLUSD_CURRENCY
+        value: "524C555344000000000000000000000000000000"
+      - key: RLUSD_ISSUER
+        value: rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV
+      - key: AGENT_INTERVAL_MS
+        value: "30000"
+      - key: AGENT_START_DELAY_MS
+        value: "120000"
+      - key: DB_PATH
+        value: ./greentrace.db
+    # NOTE: PORT is injected by Render — do not set it. Wallet seeds are generated at runtime into
+    # the ephemeral, gitignored SQLite file; only public Devnet config lives here (no secrets).

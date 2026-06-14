@@ -46,6 +46,7 @@ router.get('/stream', (req, res) => {
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
     'Access-Control-Allow-Origin': '*',
+    'X-Accel-Buffering': 'no', // prevent platform proxy from buffering the event stream
   });
   res.write(`event: hello\ndata: ${JSON.stringify({ ts: Date.now() })}\n\n`);
 
