@@ -15,6 +15,12 @@ export const config = {
   // Real Ripple USD issuer on XRPL Testnet (top up via https://tryrlusd.com).
   rlusdIssuer: process.env.RLUSD_ISSUER || 'rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV',
   rlusdFaucetUrl: 'https://tryrlusd.com',
+  // Demo persona logins (hackathon — not real auth). Username → role.
+  demoAccounts: {
+    treasury: { password: 'green2026', role: 'treasury' },
+    investor: { password: 'green2026', role: 'investor' },
+    kpmg: { password: 'green2026', role: 'verifier' },
+  },
   agentIntervalMs: Number(process.env.AGENT_INTERVAL_MS || 30000),
   // Grace delay before the FIRST automatic cycle, so the live "Run Now" breach flip is
   // demo-controllable. Subsequent cycles run every agentIntervalMs. Set 0 to disable the delay.

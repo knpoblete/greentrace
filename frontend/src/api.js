@@ -5,6 +5,8 @@ import axios from 'axios';
 const API_BASE = import.meta.env.VITE_API_BASE ?? '';
 axios.defaults.baseURL = API_BASE;
 
+export const login = (username, password) => axios.post('/api/auth/login', { username, password });
+
 export const getHealth = () => axios.get('/api/health');
 export const getStatus = () => axios.get('/api/status'); // lightweight, synchronous (seeding flag)
 export const getWallets = () => axios.get('/api/wallets');

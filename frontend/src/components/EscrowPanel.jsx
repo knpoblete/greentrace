@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { releaseEscrow } from '../api';
 import { TxLink, SimBadge, SourceTag, ActorTag, fmtAmount, ErrorBox } from './ui.jsx';
 
-export default function EscrowPanel({ bond, onChange }) {
+export default function EscrowPanel({ bond, onChange, canRelease = true }) {
   const e = bond.escrow || {};
   const all = e.allMilestones || [];
   const released = e.completedMilestones || [];
@@ -51,6 +51,8 @@ export default function EscrowPanel({ bond, onChange }) {
               </div>
               {done ? (
                 <span className="text-xs text-compliant">released</span>
+              ) : !canRelease ? (
+                <span className="text-xs text-gray-500">{eligible ? 'ready' : 'locked'}</span>
               ) : (
                 <button className="btn-primary py-1 px-3 text-xs" disabled={!eligible || busy === m} onClick={() => release(m)}>
                   {busy === m ? '…' : 'Release Funds'}

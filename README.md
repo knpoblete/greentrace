@@ -99,6 +99,20 @@ GreenTrace models three actors. The UI tags each panel/action with the actor res
 
 (Plus **Compliance Monitor** — the full monitoring history (V2 preview) — and **Issue Bond** — the 4-step issuance form.)
 
+### Logging in (demo accounts)
+
+GreenTrace has **role-based login** — each persona signs in and sees only their pages and actions,
+while everyone reads the same on-chain truth. Demo accounts (password `green2026`, also shown on the
+login screen):
+
+| Username | Role | Lands on | Can do |
+|---|---|---|---|
+| `treasury` | 🏛 Treasury (issuer) | Dashboard | Issue bonds, manage escrow, run the Compliance Monitor |
+| `investor` | 💼 Investor (buyer) | Marketplace | Browse & buy bonds (RLUSD settlement) |
+| `kpmg` | 🔍 Verifier (KPMG) | Review Queue | Attest green status (issue/revoke credential) |
+
+(Demo-only credentials — not real auth; actions are also gated on-chain by the wallet's credential.)
+
 ---
 
 ## Architecture

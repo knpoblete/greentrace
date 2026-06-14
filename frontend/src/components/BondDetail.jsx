@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getBond } from '../api';
+import { useAuth, ROLE_META } from '../auth.jsx';
 import { Spinner, ErrorBox, StatusPill, StandardBadges, TxLink, SimBadge, SourceTag, SourceLegend, ActorTag } from './ui.jsx';
 import EscrowPanel from './EscrowPanel.jsx';
 import InstrumentPanel from './InstrumentPanel.jsx';
@@ -12,6 +13,7 @@ import VerifierReview from './VerifierReview.jsx';
 
 export default function BondDetail() {
   const { id } = useParams();
+  const { role } = useAuth();
   const [bond, setBond] = useState(null);
   const [error, setError] = useState(null);
 
@@ -25,9 +27,11 @@ export default function BondDetail() {
   if (error) return <div className="p-8"><ErrorBox error={error} onRetry={load} /></div>;
   if (!bond) return <div className="p-8"><Spinner /></div>;
 
+  const back = ROLE_META[role]?.home || '/';
+
   return (
     <div className="p-8 max-w-[1200px]">
-      <Link to="/" className="text-xs text-gray-500 hover:text-gray-300">← Dashboard</Link>
+      <Link to={back} className="text-xs text-gray-500 hover:text-gray-300">← Back</Link>
 
       <div className="flex items-start justify-between mt-2 mb-6">
         <div>
@@ -42,23 +46,23 @@ export default function BondDetail() {
         <div className="flex items-center gap-2">
           <StatusPill status={bond.greenStatus} />
           <SourceTag source="verifier-attested" />
+          <Link to={`/certificate/${bond.id}`} className="btn-ghost py-1 px-3 text-xs">Certificate →</Link>
         </div>
       </div>
 
       <div className="mb-3"><SourceLegend /></div>
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
-        <span className="text-gray-400">Who acts:</span>
-        <ActorTag actor="treasury" /> issues &amp; holds proceeds
-        <ActorTag actor="verifier" /> attests green status
-        <ActorTag actor="investor" /> buys &amp; settles in RLUSD
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
           <InstrumentPanel instrument={bond.instrument} />
-          <VerifierReview bond={bond} onChange={load} />
-          <EscrowPanel bond={bond} onChange={load} />
-          <BondAccess bond={bond} />
+          {role === 'verifier' && <VerifierReview bond={bond} onChange={load} />}
+          {role !== 'verifier' && bond.pendingReview && (
+            <div className="card p-4 border-atrisk/40 bg-atrisk/5 text-sm text-atrisk">
+              ⚠ Monitor flagged this bond (recommend {bond.recommendedStatus}) — awaiting KPMG attestation.
+            </div>
+          )}
+          <EscrowPanel bond={bond} onChange={load} canRelease={role === 'treasury'} />
+          {role === 'investor' && <BondAccess bond={bond} />}
         </div>
         <div className="space-y-6">
           <div>
@@ -69,7 +73,7 @@ export default function BondDetail() {
                 : <div className="card p-4 text-xs text-gray-600">No credentials on this bond.</div>}
             </div>
           </div>
-          <RlusdPanel />
+          {role !== 'verifier' && <RlusdPanel />}
         </div>
       </div>
 
